@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+# script to fetch / update assets from VCS
+cat <<-EOF > /bin/get_assets
+#!/bin/bash
+echo "cloning assets..."
+cd /root
+git clone https://github.com/kecorbin/instruqt-consul-multicloud-service-discovery
+
+cp -r instruqt-consul-multicloud-service-discovery/assets/terraform .
+cp -r instruqt-consul-multicloud-service-discovery/assets/packer .
+rm -rf instruqt-consul-multicloud-service-discovery
+EOF
+chmod +x /bin/get_assets
+get_assets
+
+
+exit 0
