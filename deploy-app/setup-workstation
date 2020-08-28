@@ -6,14 +6,28 @@ cat <<-EOF > /bin/get_assets
 #!/bin/bash
 echo "cloning assets..."
 cd /root
-git clone https://github.com/kecorbin/instruqt-consul-multicloud-service-discovery
+git clone https://github.com/egarelnabi/hackathon2020
 
-cp -r instruqt-consul-multicloud-service-discovery/assets/terraform .
-cp -r instruqt-consul-multicloud-service-discovery/assets/packer .
-rm -rf instruqt-consul-multicloud-service-discovery
+cp -r hackathon2020/app_k8s .
+cp -r hackathon/app_terraform .
+rm -rf hackathon2020
 EOF
 chmod +x /bin/get_assets
 get_assets
 
+
+# deploy app to EKS
+kubectl config use-context eks_frontend
+kubectl apply -f app_k8s
+sleep 10
+
+
+# expose app services public IPs
+kubectl expose deployment frontend --type=LoadBalancer --name=my-frontend
+kubectl expose deployment products-api --type=LoadBalancer --name=my-products-api
+kubectl expose deployment public-api --type=LoadBalancer --name=my-public-api
+kubectl expose deployment postgres --type=LoadBalancer --name=my-postgres
+
+ 
 
 exit 0
