@@ -15,15 +15,12 @@ spec:
       targetPort: 9090
 
 ---
-# Service account to allow pod access to Vault via K8s auth
 
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: products-api
 automountServiceAccountToken: true
-
----
 
 ---
 apiVersion: v1
@@ -57,6 +54,8 @@ spec:
       labels:
         app: products-api
       annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9102"
         consul.hashicorp.com/connect-inject: "true"
         consul.hashicorp.com/connect-service-upstreams: "postgres:5432"
     spec:

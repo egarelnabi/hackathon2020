@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -e
+
+#Allow instruqt time to do it's thing
+sleep 10
 
 # script to fetch / update assets from VCS
 cat <<-EOF > /bin/get_assets
@@ -18,16 +22,29 @@ get_assets
 
 # deploy app to EKS
 kubectl config use-context eks_frontend
-kubectl apply -f app_k8s
+kubectl apply -f app_k8s --namespace=consul
 sleep 10
 
 
 # expose app services public IPs
 kubectl expose deployment frontend --type=LoadBalancer --name=my-frontend
-kubectl expose deployment products-api --type=LoadBalancer --name=my-products-api
-kubectl expose deployment public-api --type=LoadBalancer --name=my-public-api
-kubectl expose deployment postgres --type=LoadBalancer --name=my-postgres
+#kubectl expose deployment products-api --type=LoadBalancer --name=my-products-api
+#kubectl expose deployment public-api --type=LoadBalancer --name=my-public-api
+#kubectl expose deployment postgres --type=LoadBalancer --name=my-postgres
 
  
+
+
+#setup Vault app credentials
+vault secrets enable kv
+#vault secrets enable -path="kv" kv
+vault kv put kv/db/postgres/product-db-creds username=postgres password=password
+#put in permissions here
+kubectl rollout restart deployment products-api-deployment
+
+
+
+ 
+
 
 exit 0
